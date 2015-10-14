@@ -8,42 +8,44 @@ import requests
 
 # sample args for testing {"city": "New york", "state": "NY"}
 # merge POST and GET ARGS for webhooks and direct CodeBox Runs
-GET = ARGS.get("GET",{})
-POST = ARGS.get("POST",{})
+GET = ARGS.get("GET", {})
+POST = ARGS.get("POST", {})
 ARGS.update(GET)
 ARGS.update(POST)
 
 syncano_account_key = CONFIG["syncano_account_key"]
-syncano.connect(api_key = syncano_account_key)
+syncano.connect(api_key=syncano_account_key)
 
 # Get Instance name from the META object
 instance_name = META["instance"]
 
-'''
-This function makes a call to the http://openweathermap.org/ api and gets
-the current weather in the city and state that you pass.
-Make an account with openweathermap and place your api key in the CONFIG
-file, where it is labeled 'insert open weather map api key here'
-'''
+
 def make_call_for_todays_weather(city, state_or_country):
+    '''
+    This function makes a call to the http://openweathermap.org/ api and gets
+    the current weather in the city and state that you pass.
+    Make an account with openweathermap and place your api key in the CONFIG
+    file, where it is labeled 'insert open weather map api key here'
+    '''
     open_weather_map_api_key = CONFIG["open_weather_map_api_key"]
     url = "http://api.openweathermap.org/data/2.5/weather?q="+city+","+state_or_country+"&APPID="+open_weather_map_api_key
     r = requests.post(url=url)
     todays_weather = json.loads(r.content)
     return todays_weather
 
-'''
-This function checks if the current city objects exists in the city_weather class
-If the object does not exist, it is created. If the object does exist, we get the data
-from the syncano city_weather object instead of calling the open weather map api.
 
-The objects in the city_weather class are updated on a schedule, check the tasks tab
-on the left to edit the schedule!
-
-Also, dont forget to put the name of your instance in the CONFIG file, where it is
-labeled 'insert syncano instance name here'
-'''
 def get_current_temperature(city, state_or_country):
+    '''
+    This function checks if the current city objects exists in the city_weather class
+    If the object does not exist, it is created. If the object does exist, we get the data
+    from the syncano city_weather object instead of calling the open weather map api.
+
+    The objects in the city_weather class are updated on a schedule, check the tasks tab
+    on the left to edit the schedule!
+
+    Also, dont forget to put the name of your instance in the CONFIG file, where it is
+    labeled 'insert syncano instance name here'
+    '''
     # looks for the city object by filtering with city and state
     found = False
     syncano_city_objects = Object.please.list(instance_name=instance_name, class_name="city_weather").filter(city__eq=city, state__eq=state_or_country)
@@ -94,15 +96,16 @@ def get_current_temperature(city, state_or_country):
         today['long_description'] = syncano_city_obj.long_description
         return today
 
-'''
-This function calls the openweathermap api to get a 5 day fourcast
-We delete the data for the first day because our app uses
-the current weather data for the current time instead.
 
-Make sure to make an account with openweathermap and place your api key
-in CONFIG where it is labeled 'insert open weather map api key here'
-'''
 def make_call_for_4_day_forecast(city, state_or_country):
+    '''
+    This function calls the openweathermap api to get a 5 day fourcast
+    We delete the data for the first day because our app uses
+    the current weather data for the current time instead.
+
+    Make sure to make an account with openweathermap and place your api key
+    in CONFIG where it is labeled 'insert open weather map api key here'
+    '''
     open_weather_map_api_key = CONFIG["open_weather_map_api_key"]
     url = "http://api.openweathermap.org/data/2.5/forecast/daily?q="+city+","+state_or_country+"&cnt=5&APPID="+open_weather_map_api_key
     r = requests.post(url=url)
@@ -114,11 +117,12 @@ def make_call_for_4_day_forecast(city, state_or_country):
 
     return weather_data
 
-'''
-Calls the make_call_for_4_day_forecast() function
-Then the function parses the needed data and returns a json with the data we need
-'''
+
 def get_four_day_forecast(city, state_or_country):
+    '''
+    Calls the make_call_for_4_day_forecast() function
+    Then the function parses the needed data and returns a json with the data we need
+    '''
     four_day_forecast = make_call_for_4_day_forecast(city, state_or_country)
     parsed = []
     the_day = {}

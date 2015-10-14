@@ -1,3 +1,20 @@
+'''
+This codebox loops through all the city objects and updates their weather by running
+the CodeBox with the label "update_city_weather"
+
+We run this CodeBox on a schedule.
+
+The updates for the city objects all go into the channel "weather_realtime"
+The channel has a room name which is ID of the city, we get this unique ID from
+the open weather map api. Each city is in a different channel room. This makes
+parsing the changes on the front end easy!
+
+Dont forget these three things in the CONFIG file
+- syncano_account_key
+- instance_name
+- update_city_weather_codebox_id
+'''
+
 from syncano.models import Object, CodeBox
 import syncano
 
@@ -16,20 +33,3 @@ for city in all_cities:
     CodeBox.please.run(instance_name=instance_name,
                        id=update_city_weather_codebox_id,
                        payload={"object_id":city.id})
-
-'''
-This codebox loops through all the city objects and updates their weather by running
-the CodeBox with the label "update_city_weather"
-
-We run this CodeBox on a schedule.
-
-The updates for the city objects all go into the channel "weather_realtime"
-The channel has a room name which is ID of the city, we get this unique ID from
-the open weather map api. Each city is in a different channel room. This makes
-parsing the changes on the front end easy!
-
-Dont forget these three things in the CONFIG file
-- syncano_account_key
-- instance_name
-- update_city_weather_codebox_id
-'''

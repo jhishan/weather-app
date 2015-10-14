@@ -1,11 +1,11 @@
-from syncano.models import *
+from syncano.models import Object
 import syncano
 import requests
 import json
 # sample ARGS for testing  {"city": "New york", "state": "NY"}
 # merge POST and GET ARGS so that we can run this in a webhook and with direct CodeBox runs
-GET = ARGS.get("GET",{})
-POST = ARGS.get("POST",{})
+GET = ARGS.get("GET", {})
+POST = ARGS.get("POST", {})
 ARGS.update(GET)
 ARGS.update(POST)
 
@@ -17,15 +17,15 @@ syncano.connect(api_key=syncano_account_key)
 instance_name = META["instance"]
 
 
-'''
-This function gets the current temperature of a given city and state and then updates
-a specific city object with the new current data
-
-Be sure to go to http://openweathermap.org/ and make an account.
-After you have made your account, get your openweather map api key and place it
-in the CONFIG file where it is labeled 'insert open weather map api key here'
-'''
 def get_current_temperature(city, state_or_country):
+    '''
+    This function gets the current temperature of a given city and state and then updates
+    a specific city object with the new current data
+
+    Be sure to go to http://openweathermap.org/ and make an account.
+    After you have made your account, get your openweather map api key and place it
+    in the CONFIG file where it is labeled 'insert open weather map api key here'
+    '''
     open_weather_map_api_key = CONFIG["open_weather_map_api_key"]
     url = "http://api.openweathermap.org/data/2.5/weather?q="+city+","+state_or_country+"&APPID="+open_weather_map_api_key
     r = requests.post(url=url)
